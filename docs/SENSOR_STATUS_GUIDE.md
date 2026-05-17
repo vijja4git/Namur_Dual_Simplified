@@ -1,58 +1,56 @@
 # Sensor Status Guide (Simple)
 
-This table describes what the firmware **sees** on each channel when the loop current passes through the **500 Ω shunt**.  
-Voltage is measured at the **ADC pin** (P1.7 for CH1, P3.0 for CH2). Reference: **5.0 V** ADC full scale.
+Measured levels for this project (effective **200 Ω** shunt, **5.0 V** ADC ref).  
+Voltage is at the ADC pin (**P1.7** CH1, **P3.0** CH2).
 
-Formula: **Voltage (V) = Current (A) × 500 Ω**  
-Example: **2100 µA** → 0.0021 A × 500 = **1.05 V**
-
----
-
-## Quick reference table
-
-| Sensor status | What it usually means | Typical current | Typical voltage at ADC pin |
-|---------------|----------------------|-----------------|---------------------------|
-| **No sensor connected** (open / lead break) | Wire broken, unplugged, or almost no current | **Below 150 µA** | **Below ~0.08 V** (75 mV at 150 µA) |
-| **Sensor connected — OFF band** | Sensor wired, “off” or low signal | **Below 1200 µA** (and above 150 µA) | **~0.08 V to ~0.60 V** |
-| **Sensor connected — HOLD band** | Between off and on; latch keeps previous state | **1200 µA to 2100 µA** | **~0.60 V to ~1.05 V** |
-| **Sensing ON** (normal) | Strong enough signal to latch **ON** | **Above 2100 µA** | **Above ~1.05 V** |
-| **Sensor short circuit** | Too much current — wiring or sensor fault | **Above 6000 µA** | **Above ~3.0 V** |
+**Formulas:** `V = I × 200 Ω` · `I (mA) = V / 0.2` · `ADC = V × 4096 / 5.0`
 
 ---
 
-## What the board does for each status
+## Quick reference (your calibration)
 
-| Sensor status | Status LED (P0.0 / P0.1) | Fault LED (P0.2 / P0.3) |
-|---------------|--------------------------|-------------------------|
-| No sensor connected | **OFF** | **ON** (if P1.2 enable) |
-| Connected — OFF (latched off) | **OFF** (NO) or **ON** (NC inverted) | **OFF** |
-| Connected — HOLD | Stays like last ON/OFF | **OFF** |
-| Sensing ON (latched on) | **ON** (NO) or **OFF** (NC) | **OFF** |
-| Short circuit | **OFF** | **ON** (if P1.2 enable) |
-
-**P1.2 master switch:** LOW = both fault LEDs forced off (faults still detected internally).
+| Sensor status | Voltage at pin | Current | Firmware |
+|---------------|----------------|---------|----------|
+| **No sensor connected** | **0 V** | **0 mA** | Lead-break fault |
+| **Sensor connected** (idle, no object) | **~0.67 V** | **~3.36 mA** | Normal, latch **OFF** |
+| **Sensing** (object detected) | **0.2 – 0.8 V** | **0.3 – 1 mA** | Normal, latch **ON** |
+| **Short circuit** | **~1.55 V** | **~8 mA** | Short fault |
 
 ---
 
-## Example currents and voltages
+## Threshold bands (firmware)
 
-| Current | Voltage across 500 Ω | Firmware region |
-|---------|------------------------|-----------------|
-| 50 µA | 0.025 V (25 mV) | Lead break fault |
-| 150 µA | 0.075 V (75 mV) | Border of lead break |
-| 800 µA | 0.40 V | Normal — latch OFF |
-| 1200 µA | 0.60 V | Border of OFF / hold |
-| 1500 µA | 0.75 V | Hold zone (if latch was on or off, it stays) |
-| 2100 µA | 1.05 V | Border of hold / ON |
-| 2500 µA | 1.25 V | Normal — latch ON |
-| 6000 µA | 3.00 V | Border of short fault |
-| 8000 µA | 4.00 V | Short circuit fault |
+| Check | Limit |
+|-------|--------|
+| Open | V &lt; 80 mV **or** I &lt; 80 µA |
+| Short | V &gt; 1.3 V **or** I &gt; 7 mA |
+| Sensing ON | I **0.25–1.1 mA** (bench V typically **0.2–0.8 V**) |
+| Idle OFF | I ≥ **2.8 mA** (~0.67 V on bench) |
+| Hold | I between **1.1 mA** and **2.8 mA** |
+| Open / short | By **voltage** and **current** limits above |
+
+**Note:** Bench V and I do not follow one fixed Ω law; **current** sets ON/OFF, **voltage** helps open/short detection.
 
 ---
 
-## Two channels
+## Example ADC values (approx.)
 
-CH1 and CH2 each have their **own** row in the tables above.  
-CH1 fault does **not** change CH2’s status LED unless CH2’s own current is in a fault or ON/OFF range.
+| Status | V | I | ADC count |
+|--------|---|---|-----------|
+| Open | 0 V | 0 mA | 0 |
+| Sensing | 0.5 V | 0.8 mA | ~410 |
+| Connected idle | 0.67 V | 3.36 mA | ~549 |
+| Short | 1.55 V | 8 mA | ~1270 |
 
-More detail: [HOW_THE_DEVICE_WORKS.md](HOW_THE_DEVICE_WORKS.md)
+---
+
+## LEDs (per channel)
+
+| Status | Status LED | Fault LED |
+|--------|------------|-----------|
+| No sensor | OFF | ON (if P1.2 enable) |
+| Connected idle | OFF (NO) / ON (NC) | OFF |
+| Sensing ON | ON (NO) / OFF (NC) | OFF |
+| Short | OFF | ON (if P1.2 enable) |
+
+Constants: `include/namur_config.h`

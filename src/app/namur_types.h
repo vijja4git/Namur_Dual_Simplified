@@ -11,12 +11,14 @@ typedef enum {
 } namur_fault_t;
 
 typedef struct {
+    uint16_t      adc_avg;
+    uint16_t      voltage_mv;
     uint16_t      current_ua;
     namur_fault_t fault;
     bool          latch_on;
     bool          output_on;
     bool          channel_led_on;
-    bool          fault_led_on;        /* This channel only; subject to master DIP in main */
+    bool          fault_led_on;
 } namur_channel_state_t;
 
 typedef struct {

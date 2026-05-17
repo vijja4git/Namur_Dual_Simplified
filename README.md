@@ -41,12 +41,11 @@ external/         Curated MS51_16K.h for SDCC
 ## Behavior summary
 
 - 2 independent channels; 20 ms loop.
-- Faults: &lt; 150 µA lead break, &gt; 6000 µA short; channel LED off.
-- Normal: hysteresis 2100 µA ON / 1200 µA OFF / hold between.
+- Open: 0 V / 0 mA; short: ~1.55 V / 8 mA; sensing ON: 0.2–0.8 V & 0.3–1 mA; idle: ~0.67 V / 3.36 mA.
 - DIP 0 = NO (follow), 1 = NC (invert when not faulting).
 - Per-channel fault LEDs (P0.2 CH1, P0.3 CH2); P1.2 master DIP disables both fault LEDs when LOW.
 - Channels fully independent (no cross-channel LED or latch coupling).
-- ADC: 12-bit, 8-sample average; 5 V ref, 500 Ω shunt.
+- ADC: 12-bit, 8-sample average; 5 V ref, ~200 Ω effective shunt.
 
 ## License
 

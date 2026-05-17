@@ -54,6 +54,15 @@
 | **Rejected because** | No FPU; integer matches 5 V / 500 Ω definition. |
 | **Impact / risk** | ±1–2 µA quantization near thresholds; tests use direct µA for edges. |
 
+## D009 — Calibrated thresholds (measured sensor levels)
+
+| | |
+|---|---|
+| **Decision** | 200 Ω effective shunt; open 0 V/0 mA; idle ~0.67 V/3.36 mA OFF; sense 0.2–0.8 V & 0.3–1 mA ON (V+I); short ~1.55 V/8 mA. |
+| **Alternatives** | Keep 500 Ω NAMUR-standard thresholds. |
+| **Rejected because** | User-provided bench measurements on actual hardware. |
+| **Impact / risk** | PCB shunt must be ~200 Ω (or update `NAMUR_SHUNT_OHM`); idle vs sense needs both V and I checks. |
+
 ## D008 — Per-channel fault LEDs + master disable DIP
 
 | | |
