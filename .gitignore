@@ -1,0 +1,8 @@
+build/
+*.rel
+*.asm
+*.lst
+*.map
+*.mem
+*.lk
+*.sym
