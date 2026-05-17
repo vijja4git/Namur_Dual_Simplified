@@ -12,7 +12,8 @@ MS51-only, 2-channel NAMUR interface firmware (SDCC). Portable threshold/hystere
 | `include/platform.h` | BSP contract (ADC, DIP, LEDs, delay) |
 | `src/app/namur_types.h` | Fault enum, channel/system state structs |
 | `src/app/namur_logic.h/c` | µA conversion + per-channel evaluate (no MCU headers) |
-| `src/main.c` | Init, 20 ms loop, platform I/O orchestration |
+| `src/app/namur_app.c` | One 20 ms tick (ADC → logic → LEDs); used by main and integration tests |
+| `src/main.c` | Init + loop calling `namur_app_tick()` |
 | `src/bsp/ms51/platform_ms51.c` | `platform.h` implementation |
 | `src/bsp/ms51/adc.c` | 12-bit ADC, 8-sample average |
 | `src/bsp/ms51/gpio.c` | LED outputs, DIP inputs |
@@ -21,6 +22,7 @@ MS51-only, 2-channel NAMUR interface firmware (SDCC). Portable threshold/hystere
 | `src/bsp/ms51/ms51_registers.h` | ADC channel IDs |
 | `external/nuvoton/ms51/include/MS51_16K.h` | Curated SDCC SFR map |
 | `tests/test_namur_logic.c` | Host tests for logic |
+| `tests/test_channel_integration.c` | Host tests for LEDs, NO/NC, channel isolation |
 | `tests/mocks/mock_platform.c` | Optional `platform.h` mock for integration tests |
 | `Makefile` | `make` → firmware; `make test` → host tests |
 

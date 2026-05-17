@@ -8,7 +8,12 @@ From repository root:
 make test
 ```
 
-Runs `tests/test_namur_logic.c` against `src/app/namur_logic.c` (no MCU registers).
+Runs two host test programs:
+
+1. `tests/test_namur_logic.c` — threshold and logic unit tests  
+2. `tests/test_channel_integration.c` — full `namur_app_tick()` with mock GPIO/ADC (varying current, NO/NC, channel isolation, fault LEDs)
+
+See [LED_AND_SWITCH_TEST_RESULTS.md](LED_AND_SWITCH_TEST_RESULTS.md) for the behavior matrix.
 
 ### Covered cases
 

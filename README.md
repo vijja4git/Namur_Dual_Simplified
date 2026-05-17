@@ -16,6 +16,8 @@ Toolchain setup and troubleshooting: [docs/SETUP_AND_COMMANDS.md](docs/SETUP_AND
 | Document | Contents |
 |----------|----------|
 | **[docs/HOW_THE_DEVICE_WORKS.md](docs/HOW_THE_DEVICE_WORKS.md)** | **Start here** — plain-language operation, faults, voltages, DIP modes, MS51 pins |
+| [docs/SENSOR_STATUS_GUIDE.md](docs/SENSOR_STATUS_GUIDE.md) | Sensor status vs voltage vs current (simple table) |
+| [docs/LED_AND_SWITCH_TEST_RESULTS.md](docs/LED_AND_SWITCH_TEST_RESULTS.md) | Automated LED/switch/isolation test matrix |
 | [docs/PURPOSE.md](docs/PURPOSE.md) | Project goals and scope |
 | [docs/WORKING_LOGIC.md](docs/WORKING_LOGIC.md) | Thresholds, hysteresis, DIP, LEDs |
 | [docs/HARDWARE_CONNECTIONS.md](docs/HARDWARE_CONNECTIONS.md) | Pin map and analog front end |
