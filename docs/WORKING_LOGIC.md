@@ -4,45 +4,38 @@
 
 Each 20 ms cycle, **each channel is processed alone**:
 
-1. Read 8-sample averaged 12-bit ADC for that channel.
-2. Convert to µA; classify fault vs normal; update hysteresis latch.
-3. Apply that channel’s NO/NC DIP (normal only).
-4. Drive that channel’s status LED (off on fault).
-5. Drive that channel’s fault LED (on if fault, and P1.2 master enable is HIGH).
+1. Read 8-sample averaged 12-bit ADC.
+2. Convert to mV and µA; classify fault vs normal; update latch.
+3. Apply NO/NC DIP (normal only).
+4. Drive status LED (off on fault).
+5. Drive fault LED (if fault and P1.2 enable).
 
-No step reads the other channel’s state.
+## Calibrated levels (bench)
 
-## Thresholds (µA)
+| State | Voltage | Current |
+|-------|---------|---------|
+| No sensor | 0 V | 0 mA |
+| Object detected (sensing ON) | 0.2–0.8 V | 0.3–1 mA |
+| Connected idle | ~0.67 V | ~3.36 mA |
+| Short | ~1.55 V | ~8 mA |
+
+## Thresholds
 
 | Condition | Result |
 |-----------|--------|
-| I < 150 | `FAULT_LEAD_BREAK` |
-| I > 6000 | `FAULT_SHORT_CIRCUIT` |
-| I > 2100 (normal) | Latch ON |
-| I < 1200 (normal) | Latch OFF |
-| 1200 ≤ I ≤ 2100 (normal) | Hold previous latch |
+| V < 80 mV **or** I < 80 µA | `FAULT_LEAD_BREAK` |
+| V > 1.3 V **or** I > 7 mA | `FAULT_SHORT_CIRCUIT` |
+| I in 0.25–1.1 mA | Latch **ON** (sensing) |
+| I ≥ 2.8 mA | Latch **OFF** (idle) |
+| I between 1.1 mA and 2.8 mA | Hold previous latch |
 
-## DIP switches
+**ON/OFF uses current** (bench V and I are not a single fixed Ω). **Open/short** use voltage and current.
 
-| Pin | Function |
-|-----|----------|
-| P1.0 | CH1 NO/NC |
-| P1.1 | CH2 NO/NC |
-| P1.2 | Master fault LED enable (LOW = both fault LEDs forced off) |
-
-## Fault LEDs
-
-| Pin | Function |
-|-----|----------|
-| P0.2 | CH1 fault LED |
-| P0.3 | CH2 fault LED |
-
-ON when that channel has a fault and `platform_read_fault_leds_enabled()` is true.
-
-## Current from ADC
+## Conversions
 
 ```
-I_µA = adc_avg × 10000 / 4096
+V_mV = adc × 5000 / 4096
+I_µA = adc × 5000 × 1000 / (4096 × 200)
 ```
 
-See `namur_adc_to_current_ua()` in `src/app/namur_logic.c`.
+`NAMUR_SHUNT_OHM = 200` (effective). See `namur_config.h`.

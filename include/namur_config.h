@@ -2,21 +2,37 @@
 #define NAMUR_CONFIG_H
 
 /*
- * Application constants — MCU-independent.
- * Change thresholds here; then rebuild firmware and re-read docs/HOW_THE_DEVICE_WORKS.md.
+ * Thresholds calibrated to measured sensor levels (see docs/SENSOR_STATUS_GUIDE.md):
+ *   Open:     0 V,     0 mA
+ *   Idle:     0.67 V,  3.36 mA  (connected, object not detected)
+ *   Sensing:  0.2-0.8 V, 0.3-1 mA (object detected)
+ *   Short:    1.55 V,  8 mA
  */
 
-#define NAMUR_NUM_CHANNELS        2U    /* Two independent NAMUR loops */
-#define NAMUR_LOOP_PERIOD_MS      20U   /* Main loop sleeps 20 ms between updates */
-#define NAMUR_ADC_SAMPLE_COUNT    8U    /* BSP averages this many ADC readings per channel */
-#define NAMUR_ADC_RESOLUTION      4096U /* 12-bit ADC: counts 0..4095, divide by 4096 in math */
-#define NAMUR_VREF_MV             5000U /* ADC reference 5.0 V (documented assumption) */
-#define NAMUR_SHUNT_MILLIOHM      500000U /* Shunt resistor 500 Ω (stored as milliohm for docs) */
+#define NAMUR_NUM_CHANNELS        2U
+#define NAMUR_LOOP_PERIOD_MS      20U
+#define NAMUR_ADC_SAMPLE_COUNT    8U
+#define NAMUR_ADC_RESOLUTION      4096U
+#define NAMUR_VREF_MV             5000U
+#define NAMUR_SHUNT_OHM           200U   /* Effective shunt (~V/I from 0.67V/3.36mA) */
 
-/* Loop current thresholds in microamps (µA) — see namur_logic.c */
-#define NAMUR_THRESH_FAULT_OPEN_UA    150U   /* Below → wire break / open circuit fault */
-#define NAMUR_THRESH_FAULT_SHORT_UA   6000U  /* Above → short circuit fault */
-#define NAMUR_THRESH_ON_UA            2100U  /* Above → latch ON (normal band) */
-#define NAMUR_THRESH_OFF_UA            1200U  /* Below → latch OFF; between OFF and ON = hold */
+/* Open / no sensor — 0 V, 0 mA */
+#define NAMUR_V_OPEN_MV           80U
+#define NAMUR_I_OPEN_UA           80U
+
+/* Short circuit — 1.55 V, 8 mA */
+#define NAMUR_V_SHORT_MV          1300U
+#define NAMUR_I_SHORT_UA          7000U
+
+/* Sensing ON (object detected) — 0.2-0.8 V, 0.3-1 mA */
+#define NAMUR_V_SENSE_MIN_MV      180U
+#define NAMUR_V_SENSE_MAX_MV      850U
+#define NAMUR_I_SENSE_MIN_UA      250U
+#define NAMUR_I_SENSE_MAX_UA      1100U
+
+/* Connected idle (not detecting) — ~0.67 V, ~3.36 mA → latch OFF */
+#define NAMUR_I_IDLE_MIN_UA       2800U
+
+/* Hysteresis hold band between sense max and idle min: 1101-2799 µA */
 
 #endif /* NAMUR_CONFIG_H */

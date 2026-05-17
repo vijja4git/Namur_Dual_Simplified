@@ -1,32 +1,24 @@
 # Voltage References
 
-## ADC reference
+## ADC and shunt
 
-- **Vref = 5.0 V** (5000 mV) assumed for current calculation.
-- 12-bit full scale: **4096** counts (0–4095).
+- **Vref = 5.0 V** (12-bit, 0–4095)
+- **R_shunt = 200 Ω** (effective, from measured 0.67 V / 3.36 mA)
 
-## Shunt
-
-- **R_shunt = 500 Ω**
-
-## Current formula
+## Conversions
 
 ```
-V_shunt = (adc_avg / 4096) × 5.0 V
-I_A     = V_shunt / 500 Ω
-I_µA    = I_A × 1e6 = adc_avg × 10000 / 4096
+V_mV = adc × 5000 / 4096
+I_µA = adc × 5000 × 1000 / (4096 × 200) = adc × 6104 / 4096
 ```
 
-## Example levels
+## Calibrated operating points
 
-| adc_avg | V_shunt (mV) | I (µA) | Typical interpretation |
-|---------|--------------|--------|-------------------------|
-| 82 | ~100 | ~200 | Near NAMUR “on” band (logic uses thresholds, not table) |
-| 2048 | ~2500 | ~5000 | Mid-scale (test sanity) |
-| 12 | ~15 | ~29 | Open / lead break region |
+| Condition | V | I |
+|-----------|---|---|
+| No sensor | 0 V | 0 mA |
+| Object detected (sensing) | 0.2 – 0.8 V | 0.3 – 1 mA |
+| Connected, not detecting | ~0.67 V | ~3.36 mA |
+| Short circuit | ~1.55 V | ~8 mA |
 
-Threshold constants live in `include/namur_config.h`.
-
-## Calibration note
-
-If the board uses a divider before the ADC or a reference other than 5.0 V, adjust `NAMUR_VREF_MV` and/or add a gain factor in BSP — document any change in `DECISION_LOG.md`.
+Threshold constants: `include/namur_config.h`
