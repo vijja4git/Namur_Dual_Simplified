@@ -16,11 +16,11 @@ typedef struct {
     bool          latch_on;
     bool          output_on;
     bool          channel_led_on;
+    bool          fault_led_on;        /* This channel only; subject to master DIP in main */
 } namur_channel_state_t;
 
 typedef struct {
     namur_channel_state_t channel[2];
-    bool                  global_fault_led_on;
 } namur_system_state_t;
 
 #endif /* NAMUR_TYPES_H */

@@ -1,12 +1,10 @@
 #include "platform_ms51.h"
 
-#include "ms51_registers.h"
-
 void ms51_clock_init(void)
 {
     /*
-     * Default: internal 24 MHz HIRC after reset (see TRM clock chapter).
-     * Extended SFRs (CLKDIV/CKCON) require Nuvoton paging helpers; not
-     * needed for bring-up — delay.c is calibrated for this default.
+     * No extended clock registers programmed here (SDCC uses reset defaults).
+     * After reset the MS51 typically runs internal HIRC (~24 MHz).
+     * delay.c assumes that speed; change MS51_DELAY_CYCLES_PER_MS if you change clocks.
      */
 }

@@ -8,15 +8,14 @@ static uint8_t s_p0_out;
 
 void ms51_gpio_init(void)
 {
-    /* LEDs: push-pull outputs on P0.0, P0.1, P0.2 (active high) */
-    P0M1 &= (uint8_t)~(MS51_CH0_LED_MASK | MS51_CH1_LED_MASK | MS51_FAULT_LED_MASK);
-    P0M2 |= (uint8_t)(MS51_CH0_LED_MASK | MS51_CH1_LED_MASK | MS51_FAULT_LED_MASK);
+    /* Status + fault LEDs on P0.0–P0.3: push-pull outputs */
+    P0M1 &= (uint8_t)~MS51_P0_LED_OUTPUT_MASK;
+    P0M2 |= (uint8_t)MS51_P0_LED_OUTPUT_MASK;
 
-    /* DIP inputs with pull-up: P1.0, P1.1 */
-    P1M1 |= (uint8_t)(MS51_CH0_DIP_MASK | MS51_CH1_DIP_MASK);
-    P1M2 &= (uint8_t)~(MS51_CH0_DIP_MASK | MS51_CH1_DIP_MASK);
+    /* Per-channel NO/NC DIPs on P1.0, P1.1; master fault-enable on P1.2 */
+    P1M1 |= (uint8_t)(MS51_CH0_DIP_MASK | MS51_CH1_DIP_MASK | MS51_FAULT_LED_ENABLE_MASK);
+    P1M2 &= (uint8_t)~(MS51_CH0_DIP_MASK | MS51_CH1_DIP_MASK | MS51_FAULT_LED_ENABLE_MASK);
 
-    /* ADC inputs: P1.7 (CH0), P3.0 (CH1) — high-impedance input */
     P1M1 |= 0x80U;
     P1M2 &= (uint8_t)~0x80U;
     P3M1 |= 0x01U;
@@ -38,6 +37,11 @@ void ms51_gpio_set_led_mask(uint8_t mask, bool on)
 
 bool ms51_gpio_read_dip_mask(uint8_t mask)
 {
-    /* DIP closed to GND reads 0; open (NC label) reads 1 with pull-up */
     return (P1 & mask) != 0U;
+}
+
+bool ms51_gpio_read_fault_leds_enabled(void)
+{
+    /* DIP open (HIGH) = allow fault LEDs; DIP closed to GND (LOW) = disable all fault LEDs */
+    return (P1 & MS51_FAULT_LED_ENABLE_MASK) != 0U;
 }

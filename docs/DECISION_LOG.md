@@ -54,6 +54,15 @@
 | **Rejected because** | No FPU; integer matches 5 V / 500 Ω definition. |
 | **Impact / risk** | ±1–2 µA quantization near thresholds; tests use direct µA for edges. |
 
+## D008 — Per-channel fault LEDs + master disable DIP
+
+| | |
+|---|---|
+| **Decision** | CH1 fault LED P0.2, CH2 fault LED P0.3; P1.2 master DIP disables both fault LEDs when LOW. Remove global fault OR logic. |
+| **Alternatives** | Keep single global fault LED; software-only disable flag. |
+| **Rejected because** | User requirement for dedicated fault indication per channel and hardware disable of fault LEDs only. |
+| **Impact / risk** | P0.3 and P1.2 must be wired on PCB; ICE tools may conflict with P0.2 on some debug boards. |
+
 ## D007 — Output and LED off on fault
 
 | | |

@@ -5,9 +5,9 @@
 #include "namur_config.h"
 #include "platform_ms51.h"
 
-/* gpio helpers declared in gpio.c */
 void ms51_gpio_set_led_mask(uint8_t mask, bool on);
 bool ms51_gpio_read_dip_mask(uint8_t mask);
+bool ms51_gpio_read_fault_leds_enabled(void);
 
 static const uint8_t s_adc_map[NAMUR_NUM_CHANNELS] = {
     MS51_CH0_ADC_CHANNEL,
@@ -17,6 +17,11 @@ static const uint8_t s_adc_map[NAMUR_NUM_CHANNELS] = {
 static const uint8_t s_led_mask[NAMUR_NUM_CHANNELS] = {
     MS51_CH0_LED_MASK,
     MS51_CH1_LED_MASK
+};
+
+static const uint8_t s_fault_led_mask[NAMUR_NUM_CHANNELS] = {
+    MS51_CH0_FAULT_LED_MASK,
+    MS51_CH1_FAULT_LED_MASK
 };
 
 static const uint8_t s_dip_mask[NAMUR_NUM_CHANNELS] = {
@@ -52,6 +57,11 @@ bool platform_read_dip_nc(uint8_t channel)
     return ms51_gpio_read_dip_mask(s_dip_mask[channel]);
 }
 
+bool platform_read_fault_leds_enabled(void)
+{
+    return ms51_gpio_read_fault_leds_enabled();
+}
+
 void platform_set_channel_led(uint8_t channel, bool on)
 {
     if (channel >= NAMUR_NUM_CHANNELS) {
@@ -60,7 +70,10 @@ void platform_set_channel_led(uint8_t channel, bool on)
     ms51_gpio_set_led_mask(s_led_mask[channel], on);
 }
 
-void platform_set_fault_led(bool on)
+void platform_set_channel_fault_led(uint8_t channel, bool on)
 {
-    ms51_gpio_set_led_mask(MS51_FAULT_LED_MASK, on);
+    if (channel >= NAMUR_NUM_CHANNELS) {
+        return;
+    }
+    ms51_gpio_set_led_mask(s_fault_led_mask[channel], on);
 }

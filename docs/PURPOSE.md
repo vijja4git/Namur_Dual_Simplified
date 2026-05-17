@@ -1,6 +1,6 @@
 # Purpose
 
-This repository contains **MS51-only** firmware for a **2-channel NAMUR** current-loop interface. It detects loop current via a shunt and ADC, applies NAMUR-style thresholds with hysteresis, and drives per-channel and global fault indicators.
+This repository contains **MS51-only** firmware for a **2-channel NAMUR** current-loop interface. It detects loop current via a shunt and ADC, applies NAMUR-style thresholds with hysteresis, and drives per-channel status and fault indicators (independent channels).
 
 ## Goals
 

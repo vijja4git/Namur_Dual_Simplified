@@ -39,8 +39,7 @@ main
        ├─ platform_read_dip_nc(ch)
        ├─ namur_logic_evaluate_channel()
        ├─ platform_set_channel_led()  [off if fault]
-       ├─ namur_logic_any_fault()
-       └─ platform_set_fault_led()
+       ├─ platform_set_channel_fault_led()  [per channel, gated by P1.2]
 ```
 
 ## Dependency graph

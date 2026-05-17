@@ -2,13 +2,15 @@
 
 ## Overview
 
-Each 20 ms cycle:
+Each 20 ms cycle, **each channel is processed alone**:
 
-1. Read 8-sample averaged 12-bit ADC per channel.
-2. Convert ADC counts to loop current (µA).
-3. Classify fault vs normal; update hysteresis latch in normal band.
-4. Apply DIP NO/NC inversion (normal state only).
-5. Drive channel LEDs (off on fault) and global fault LED (on if any channel faults).
+1. Read 8-sample averaged 12-bit ADC for that channel.
+2. Convert to µA; classify fault vs normal; update hysteresis latch.
+3. Apply that channel’s NO/NC DIP (normal only).
+4. Drive that channel’s status LED (off on fault).
+5. Drive that channel’s fault LED (on if fault, and P1.2 master enable is HIGH).
+
+No step reads the other channel’s state.
 
 ## Thresholds (µA)
 
@@ -20,40 +22,27 @@ Each 20 ms cycle:
 | I < 1200 (normal) | Latch OFF |
 | 1200 ≤ I ≤ 2100 (normal) | Hold previous latch |
 
-Faults are evaluated **before** hysteresis. During any fault, the channel LED is forced **off**.
-
 ## DIP switches
 
-| DIP | Mode | Output in normal state |
-|-----|------|------------------------|
-| 0 | NO | Follow latch (`output = latch`) |
-| 1 | NC | Invert latch (`output = !latch`) |
+| Pin | Function |
+|-----|----------|
+| P1.0 | CH1 NO/NC |
+| P1.1 | CH2 NO/NC |
+| P1.2 | Master fault LED enable (LOW = both fault LEDs forced off) |
 
-Inversion applies only when `fault == NONE`. DIP does not re-enable the channel LED during fault.
+## Fault LEDs
 
-## Global fault LED
+| Pin | Function |
+|-----|----------|
+| P0.2 | CH1 fault LED |
+| P0.3 | CH2 fault LED |
 
-ON when **either** channel has `FAULT_LEAD_BREAK` or `FAULT_SHORT_CIRCUIT`.
+ON when that channel has a fault and `platform_read_fault_leds_enabled()` is true.
 
 ## Current from ADC
-
-```
-I_µA = adc_avg × VREF_mV × 1000 / (4096 × R_Ω)
-```
-
-With VREF = 5000 mV and R = 500 Ω:
 
 ```
 I_µA = adc_avg × 10000 / 4096
 ```
 
-Implemented in `namur_adc_to_current_ua()` (`src/app/namur_logic.c`).
-
-## Code map
-
-| Concern | Location |
-|---------|----------|
-| Thresholds / constants | `include/namur_config.h` |
-| Pure state evaluation | `namur_logic_evaluate_channel()` |
-| Loop orchestration | `src/main.c` |
-| ADC average, GPIO | `src/bsp/ms51/` |
+See `namur_adc_to_current_ua()` in `src/app/namur_logic.c`.
